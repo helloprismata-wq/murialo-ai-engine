@@ -74,10 +74,102 @@ def recommend_candidates(lowongan, daftar_kandidat, top_n=3):
 
 
 # ---------------------------------------------------------
-# 3. COBA JALANKAN
+# 3. COLLABORATIVE FILTERING (versi sederhana, data dummy)
+# ---------------------------------------------------------
+
+# Histori interaksi dummy: siapa pernah dilamar ke posisi apa, hasilnya gimana.
+# Nanti diganti data asli begitu sistem rekrutmen sungguhan mulai jalan.
+histori_interaksi_dummy = [
+    {"kandidat_id": "K001", "lowongan_id": "L002", "hasil": "diterima"},
+    {"kandidat_id": "K003", "lowongan_id": "L001", "hasil": "diterima"},
+    {"kandidat_id": "K004", "lowongan_id": "L002", "hasil": "ditolak"},
+    {"kandidat_id": "K002", "lowongan_id": "L001", "hasil": "ditolak"},
+    {"kandidat_id": "K003", "lowongan_id": "L002", "hasil": "diterima"},
+]
+
+# Bobot per hasil - "diterima" dianggap sinyal positif kuat,
+# "ditolak" sinyal negatif ringan (bukan didiskualifikasi total).
+BOBOT_HASIL = {"diterima": 1.0, "ditolak": -0.3, "lolos_screening": 0.5}
+
+
+def collaborative_score(kandidat_id, lowongan, semua_lowongan, histori):
+    """
+    Skor Collaborative Filtering sederhana:
+    lihat performa kandidat di lowongan-lowongan LAIN yang skill-nya
+    mirip dengan lowongan target, berdasarkan histori interaksi.
+
+    Ini versi dasar (belum pakai matrix factorization / KNN beneran),
+    cukup buat kerangka awal sebelum dikembangkan lebih lanjut.
+    """
+    skor = 0.0
+    jumlah_histori = 0
+
+    for h in histori:
+        if h["kandidat_id"] != kandidat_id:
+            continue
+
+        lowongan_lain = next(
+            (l for l in semua_lowongan if l["lowongan_id"] == h["lowongan_id"]), None
+        )
+        if not lowongan_lain:
+            continue
+
+        # Seberapa mirip lowongan yang pernah dilamar vs lowongan target,
+        # dari sisi kualifikasi skill (pakai fungsi yang sama seperti content-based).
+        vectorizer = CountVectorizer()
+        vectors = vectorizer.fit_transform([
+            skills_to_text(lowongan["kualifikasi_skill"]),
+            skills_to_text(lowongan_lain["kualifikasi_skill"]),
+        ])
+        kemiripan_lowongan = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+
+        bobot = BOBOT_HASIL.get(h["hasil"], 0)
+        skor += kemiripan_lowongan * bobot
+        jumlah_histori += 1
+
+    if jumlah_histori == 0:
+        return 0.0  # belum ada histori sama sekali -> netral
+
+    return round(skor / jumlah_histori, 3)
+
+
+# ---------------------------------------------------------
+# 4. GABUNGKAN CONTENT-BASED + COLLABORATIVE JADI SKOR AKHIR
+# ---------------------------------------------------------
+
+def recommend_candidates_gabungan(lowongan, daftar_kandidat, semua_lowongan, histori,
+                                   bobot_content=0.6, bobot_collab=0.4, top_n=3):
+    """
+    Gabungkan skor Content-Based dan Collaborative jadi satu skor akhir.
+    Bobot 60/40 itu titik awal - bisa dituning kalau sudah ada data asli.
+    """
+    hasil_content = recommend_candidates(lowongan, daftar_kandidat, top_n=len(daftar_kandidat))
+    hasil_gabungan = []
+
+    for r in hasil_content:
+        skor_collab = collaborative_score(r["kandidat_id"], lowongan, semua_lowongan, histori)
+        skor_akhir = (bobot_content * r["skor_content_based"]) + (bobot_collab * skor_collab)
+
+        hasil_gabungan.append({
+            "kandidat_id": r["kandidat_id"],
+            "nama": r["nama"],
+            "skor_content_based": r["skor_content_based"],
+            "skor_collaborative": skor_collab,
+            "skor_akhir": round(skor_akhir, 3),
+        })
+
+    hasil_terurut = sorted(hasil_gabungan, key=lambda x: x["skor_akhir"], reverse=True)
+    return hasil_terurut[:top_n]
+
+
+# ---------------------------------------------------------
+# 5. COBA JALANKAN
 # ---------------------------------------------------------
 
 if __name__ == "__main__":
+    print("############################################")
+    print("# VERSI 1: CONTENT-BASED FILTERING SAJA")
+    print("############################################")
     for lowongan in lowongan_dummy:
         print(f"\n=== Rekomendasi untuk: {lowongan['posisi']} ({lowongan['lowongan_id']}) ===")
         print(f"Kualifikasi: {', '.join(lowongan['kualifikasi_skill'])}\n")
@@ -86,3 +178,21 @@ if __name__ == "__main__":
 
         for i, r in enumerate(rekomendasi, start=1):
             print(f"{i}. {r['nama']} ({r['kandidat_id']}) - skor: {r['skor_content_based']}")
+
+    print("\n\n############################################")
+    print("# VERSI 2: GABUNGAN CONTENT-BASED + COLLABORATIVE")
+    print("############################################")
+    for lowongan in lowongan_dummy:
+        print(f"\n=== Rekomendasi untuk: {lowongan['posisi']} ({lowongan['lowongan_id']}) ===")
+        print(f"Kualifikasi: {', '.join(lowongan['kualifikasi_skill'])}\n")
+
+        rekomendasi = recommend_candidates_gabungan(
+            lowongan, kandidat_dummy, lowongan_dummy, histori_interaksi_dummy, top_n=3
+        )
+
+        for i, r in enumerate(rekomendasi, start=1):
+            print(
+                f"{i}. {r['nama']} ({r['kandidat_id']}) - "
+                f"skor akhir: {r['skor_akhir']} "
+                f"(content: {r['skor_content_based']}, collab: {r['skor_collaborative']})"
+            )
