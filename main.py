@@ -1,5 +1,5 @@
 ﻿from fastapi import FastAPI
-from app.routers import resume_parser
+from app.routers import resume_parser, users
 
 app = FastAPI(
     title="Murialo AI Engine",
@@ -8,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(resume_parser.router)
+app.include_router(users.router)
 
 @app.get("/")
 def read_root():
