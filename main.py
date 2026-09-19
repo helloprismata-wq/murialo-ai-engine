@@ -1,5 +1,5 @@
 ﻿from fastapi import FastAPI
-from app.routers import resume_parser, users
+from app.routers import resume_parser, users, rekomendasi_kandidat
 
 app = FastAPI(
     title="Murialo AI Engine",
@@ -9,6 +9,7 @@ app = FastAPI(
 
 app.include_router(resume_parser.router)
 app.include_router(users.router)
+app.include_router(rekomendasi_kandidat.router, prefix="/rekomendasi-kandidat", tags=["Rekomendasi Kandidat"])
 
 @app.get("/")
 def read_root():
