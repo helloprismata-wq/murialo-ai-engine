@@ -1,0 +1,18 @@
+TRAIN_DATA = [
+    ("Saya adalah seorang Software Engineer di PT Telkom Indonesia. Saya lulus dari Universitas Indonesia dengan gelar S1 Teknik Informatika. Keahlian saya meliputi Python, Django, dan PostgreSQL.",
+     {"entities": [(20, 37, 'JOB_TITLE'), (41, 60, 'COMPANY'), (78, 99, 'EDUCATION'), (113, 134, 'DEGREE'), (159, 165, 'SKILL'), (167, 173, 'SKILL'), (179, 189, 'SKILL')]}),
+    ("Bekerja sebagai Data Scientist di Tokopedia selama 3 tahun. Latar belakang pendidikan S2 Ilmu Komputer dari Institut Teknologi Bandung. Terbiasa menggunakan Machine Learning, TensorFlow, dan scikit-learn.",
+     {"entities": [(16, 30, 'JOB_TITLE'), (34, 43, 'COMPANY'), (86, 102, 'DEGREE'), (108, 134, 'EDUCATION'), (157, 173, 'SKILL'), (175, 185, 'SKILL'), (191, 203, 'SKILL')]}),
+    ("Pengalaman 5 tahun sebagai Backend Developer di Gojek. Lulusan S1 Sistem Informasi Universitas Gadjah Mada. Tech stack: Node.js, Express, MongoDB, dan AWS.",
+     {"entities": [(27, 44, 'JOB_TITLE'), (48, 53, 'COMPANY'), (63, 82, 'DEGREE'), (83, 106, 'EDUCATION'), (120, 127, 'SKILL'), (129, 136, 'SKILL'), (138, 145, 'SKILL'), (151, 154, 'SKILL')]}),
+    ("Saya UI/UX Designer yang pernah bekerja di Traveloka. Menguasai Figma, Adobe Illustrator, dan HTML CSS. Lulusan Desain Komunikasi Visual dari Binus University.",
+     {"entities": [(5, 19, 'JOB_TITLE'), (43, 52, 'COMPANY'), (64, 69, 'SKILL'), (71, 88, 'SKILL'), (94, 102, 'SKILL'), (112, 136, 'DEGREE'), (142, 158, 'EDUCATION')]}),
+    ("Frontend Engineer dengan pengalaman menggunakan React dan Vue. Sebelumnya bekerja di Shopee Indonesia. Pendidikan D3 Teknik Komputer dari Politeknik Negeri Jakarta.",
+     {"entities": [(0, 17, 'JOB_TITLE'), (48, 53, 'SKILL'), (58, 61, 'SKILL'), (85, 101, 'COMPANY'), (114, 132, 'DEGREE'), (138, 163, 'EDUCATION')]}),
+    ("DevOps Engineer di Bukalapak. Ahli dalam Kubernetes, Docker, dan CI/CD. Gelar S1 Teknik Elektro dari Universitas Diponegoro.",
+     {"entities": [(0, 15, 'JOB_TITLE'), (19, 28, 'COMPANY'), (41, 51, 'SKILL'), (53, 59, 'SKILL'), (65, 70, 'SKILL'), (78, 95, 'DEGREE'), (101, 123, 'EDUCATION')]}),
+    ("Mobile Developer (Android/iOS) menggunakan Flutter dan Dart. Lulusan S1 Informatika dari ITS Surabaya. Pernah magang di Ruangguru.",
+     {"entities": [(0, 16, 'JOB_TITLE'), (43, 50, 'SKILL'), (55, 59, 'SKILL'), (69, 83, 'DEGREE'), (89, 101, 'EDUCATION'), (120, 129, 'COMPANY')]}),
+    ("Data Analyst berpengalaman dengan SQL, Tableau, dan Excel. Lulus S1 Statistika di Institut Pertanian Bogor. Bekerja saat ini di Bank BCA.",
+     {"entities": [(0, 12, 'JOB_TITLE'), (34, 37, 'SKILL'), (39, 46, 'SKILL'), (52, 57, 'SKILL'), (65, 78, 'DEGREE'), (82, 106, 'EDUCATION'), (128, 136, 'COMPANY')]}),
+]
