@@ -1,0 +1,187 @@
+﻿{% extends "base.html" %}
+{% block title %}Detail CV — {{ cv.nama_file|default:"CV" }}{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-3" style="flex-wrap:wrap; gap:0.75rem;">
+  <div>
+    <a href="{% url 'resume:daftar' %}" class="btn btn-secondary btn-sm" id="btn-kembali">
+      ← Kembali
+    </a>
+  </div>
+  <div class="flex gap-1" style="flex-wrap:wrap;">
+    {% if not cv.sudah_diparse or not hasil %}
+      <form method="post" action="{% url 'resume:parse' cv.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-sm" id="btn-parse-manual">
+          🤖 Parse CV
+        </button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'resume:parse' cv.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary btn-sm" id="btn-parse-ulang">
+          🔄 Parse Ulang
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card fade-in mb-3">
+  <div class="card-title">
+    <span class="icon">📎</span>
+    Informasi File CV
+  </div>
+  <div class="detail-grid">
+    <div class="detail-field">
+      <label>Nama File</label>
+      <div class="value mono">{{ cv.nama_file|default:cv.file_cv.name }}</div>
+    </div>
+    <div class="detail-field">
+      <label>Diunggah Oleh</label>
+      <div class="value">{{ cv.pelamar.get_full_name|default:cv.pelamar.username }}</div>
+    </div>
+    <div class="detail-field">
+      <label>Tanggal Upload</label>
+      <div class="value">{{ cv.diunggah_pada|date:"d F Y, H:i" }}</div>
+    </div>
+    <div class="detail-field">
+      <label>Status Parsing</label>
+      <div class="value">
+        {% if cv.sudah_diparse %}
+          <span class="badge badge-success">✅ Sudah Diparse</span>
+        {% else %}
+          <span class="badge badge-muted">⏳ Belum Diparse</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if hasil %}
+  <!-- Identitas -->
+  <div class="card fade-in mb-3" style="animation-delay: 0.05s;">
+    <div class="card-title">
+      <span class="icon">👤</span>
+      Identitas Kandidat <small style="color:var(--clr-muted); font-weight:400; font-size:0.75rem;">(Hasil spaCy NER + Regex)</small>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field">
+        <label>Nama Lengkap</label>
+        {% if hasil.nama_lengkap %}
+          <div class="value">{{ hasil.nama_lengkap }}</div>
+        {% else %}
+          <div class="empty">Tidak terdeteksi</div>
+        {% endif %}
+      </div>
+      <div class="detail-field">
+        <label>Email</label>
+        {% if hasil.email %}
+          <div class="value mono">{{ hasil.email }}</div>
+        {% else %}
+          <div class="empty">Tidak terdeteksi</div>
+        {% endif %}
+      </div>
+      <div class="detail-field">
+        <label>No. Telepon</label>
+        {% if hasil.nomor_telepon %}
+          <div class="value mono">{{ hasil.nomor_telepon }}</div>
+        {% else %}
+          <div class="empty">Tidak terdeteksi</div>
+        {% endif %}
+      </div>
+      <div class="detail-field">
+        <label>Diparse Pada</label>
+        <div class="value">{{ hasil.diparse_pada|date:"d F Y, H:i" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skill -->
+  <div class="card fade-in mb-3" style="animation-delay: 0.1s;">
+    <div class="card-title">
+      <span class="icon">⚡</span>
+      Skill Terdeteksi
+      <span class="badge badge-primary" style="margin-left: auto; font-size:0.7rem;">
+        {% with skill_list=hasil.daftar_skill %}{{ skill_list|length }}{% endwith %} skill
+      </span>
+    </div>
+    {% with skill_list=hasil.daftar_skill %}
+      {% if skill_list %}
+        <div class="skill-tags" id="skill-tags-container">
+          {% for skill in skill_list %}
+            <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state" style="padding: 2rem;">
+          <div class="empty-icon" style="font-size:2rem;">🔍</div>
+          <h3>Tidak ada skill terdeteksi</h3>
+          <p style="font-size:0.85rem;">Coba parse ulang, atau tambah kata kunci skill di <code>resume/parser.py</code> → <code>DAFTAR_SKILL</code></p>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Riwayat Kerja -->
+  <div class="card fade-in mb-3" style="animation-delay: 0.15s;">
+    <div class="card-title">
+      <span class="icon">💼</span>
+      Riwayat Kerja <small style="color:var(--clr-muted); font-weight:400; font-size:0.75rem;">(Pendekatan Heuristik)</small>
+    </div>
+    {% if hasil.riwayat_kerja %}
+      <div class="text-block" id="block-riwayat-kerja">{{ hasil.riwayat_kerja }}</div>
+    {% else %}
+      <div class="empty" style="color:var(--clr-muted); font-style:italic; font-size:0.9rem;">
+        Seksi riwayat kerja tidak ditemukan dalam CV.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Pendidikan -->
+  <div class="card fade-in mb-3" style="animation-delay: 0.2s;">
+    <div class="card-title">
+      <span class="icon">🎓</span>
+      Pendidikan <small style="color:var(--clr-muted); font-weight:400; font-size:0.75rem;">(Pendekatan Heuristik)</small>
+    </div>
+    {% if hasil.pendidikan %}
+      <div class="text-block" id="block-pendidikan">{{ hasil.pendidikan }}</div>
+    {% else %}
+      <div class="empty" style="color:var(--clr-muted); font-style:italic; font-size:0.9rem;">
+        Seksi pendidikan tidak ditemukan dalam CV.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Teks Mentah (collapsed) -->
+  <div class="card fade-in" style="animation-delay: 0.25s;">
+    <div class="card-title">
+      <span class="icon">📝</span>
+      Teks Mentah CV
+      <button
+        class="btn btn-secondary btn-sm"
+        style="margin-left:auto;"
+        id="btn-toggle-teks-mentah"
+        onclick="
+          const el = document.getElementById('teks-mentah-block');
+          const vis = el.style.display !== 'none';
+          el.style.display = vis ? 'none' : 'block';
+          this.textContent = vis ? '👁 Tampilkan' : '🙈 Sembunyikan';
+        "
+      >👁 Tampilkan</button>
+    </div>
+    <div id="teks-mentah-block" style="display:none;">
+      <div class="text-block" id="block-teks-mentah">{{ hasil.teks_mentah|default:"(kosong)" }}</div>
+    </div>
+  </div>
+
+{% else %}
+  <div class="card fade-in">
+    <div class="empty-state">
+      <div class="empty-icon">🤖</div>
+      <h3>CV Belum Diparse</h3>
+      <p>Klik tombol "Parse CV" di atas untuk memulai analisis AI.</p>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

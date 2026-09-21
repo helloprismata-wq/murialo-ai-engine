@@ -1,0 +1,60 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk — Prismata AI Recruitment</title>
+  <link rel="stylesheet" href="{% static 'css/prismata.css' %}">
+</head>
+<body>
+<div class="login-wrapper">
+  <div class="login-box fade-in">
+    <div class="login-logo">
+      <h1>PRISMATA</h1>
+      <p>AI Recruitment System</p>
+    </div>
+
+    {% if form.errors %}
+      <div class="alert alert-danger">❌ Username atau password salah. Coba lagi.</div>
+    {% endif %}
+
+    <form method="post" id="form-login">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="id_username">Username</label>
+        <input
+          type="text"
+          name="username"
+          id="id_username"
+          class="form-control"
+          placeholder="Masukkan username..."
+          autocomplete="username"
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id_password">Password</label>
+        <input
+          type="password"
+          name="password"
+          id="id_password"
+          class="form-control"
+          placeholder="Masukkan password..."
+          autocomplete="current-password"
+          required
+        >
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="btn btn-primary w-full mt-2" id="btn-login">
+        🔐 Masuk ke Prismata
+      </button>
+    </form>
+
+    <p class="text-center text-muted mt-3" style="font-size:0.82rem;">
+      Belum punya akun? Hubungi admin untuk pendaftaran.
+    </p>
+  </div>
+</div>
+</body>
+</html>

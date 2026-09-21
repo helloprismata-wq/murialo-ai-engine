@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Prismata{% endblock %} — AI Recruitment System</title>
+  <meta name="description" content="{% block meta_desc %}Prismata: Sistem rekrutmen berbasis kecerdasan buatan untuk membantu proses seleksi kandidat secara cerdas dan efisien.{% endblock %}">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/prismata.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="{% url 'resume:daftar' %}" class="navbar-brand">PRISM<span>ATA</span></a>
+    <div class="navbar-links">
+      {% if user.is_authenticated %}
+        <a href="{% url 'resume:daftar' %}">📄 CV Saya</a>
+        <a href="{% url 'resume:upload' %}">⬆ Upload CV</a>
+        {% if user.is_staff %}
+          <a href="/admin/">⚙ Admin</a>
+        {% endif %}
+        <a href="{% url 'akun:logout' %}">Keluar ({{ user.username }})</a>
+      {% else %}
+        <a href="{% url 'akun:login' %}">Masuk</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }} fade-in">
+        {% if msg.tags == 'success' %}✅{% elif msg.tags == 'warning' %}⚠️{% elif msg.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+// Upload zone drag-and-drop feedback
+document.querySelectorAll(".upload-zone").forEach(zone => {
+  zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag-over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("drag-over");
+    const input = zone.querySelector("input[type=file]");
+    if (input && e.dataTransfer.files.length) {
+      input.files = e.dataTransfer.files;
+      const label = zone.querySelector(".upload-text");
+      if (label) label.innerHTML = `<strong>${e.dataTransfer.files[0].name}</strong>`;
+    }
+  });
+  const input = zone.querySelector("input[type=file]");
+  if (input) {
+    input.addEventListener("change", () => {
+      if (input.files[0]) {
+        const label = zone.querySelector(".upload-text");
+        if (label) label.innerHTML = `<strong>${input.files[0].name}</strong> terpilih ✅`;
+      }
+    });
+  }
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

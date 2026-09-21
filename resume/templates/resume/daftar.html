@@ -1,0 +1,50 @@
+﻿{% extends "base.html" %}
+{% block title %}CV Saya{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+  <h1>📄 CV Saya</h1>
+  <p>Daftar CV yang telah kamu unggah ke sistem Prismata</p>
+</div>
+
+<div class="flex justify-between items-center mb-3">
+  <span class="text-muted" style="font-size:0.9rem;">
+    Total: <strong>{{ cv_list|length }}</strong> CV
+  </span>
+  <a href="{% url 'resume:upload' %}" class="btn btn-primary" id="btn-upload-baru">
+    ⬆ Upload CV Baru
+  </a>
+</div>
+
+{% if cv_list %}
+  <div class="cv-list">
+    {% for cv in cv_list %}
+    <a href="{% url 'resume:detail' cv.pk %}" class="cv-item fade-in">
+      <div class="cv-item-info">
+        <div class="cv-item-name">📎 {{ cv.nama_file|default:cv.file_cv.name }}</div>
+        <div class="cv-item-meta">
+          Diunggah: {{ cv.diunggah_pada|date:"d F Y, H:i" }}
+        </div>
+      </div>
+      <div class="cv-item-actions">
+        {% if cv.sudah_diparse %}
+          <span class="badge badge-success">✅ Sudah Diparse</span>
+        {% else %}
+          <span class="badge badge-muted">⏳ Belum Diparse</span>
+        {% endif %}
+        <span style="color: var(--clr-muted); font-size: 1.2rem;">→</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state fade-in">
+    <div class="empty-icon">📭</div>
+    <h3>Belum ada CV yang diunggah</h3>
+    <p>Upload CV pertama kamu untuk memulai proses analisis.</p>
+    <a href="{% url 'resume:upload' %}" class="btn btn-primary mt-2" id="btn-upload-pertama">
+      ⬆ Upload CV Sekarang
+    </a>
+  </div>
+{% endif %}
+{% endblock %}
