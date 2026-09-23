@@ -29,3 +29,6 @@ __pycache__/
 
 # Database Django lama
 /db.sqlite3
+# Streamlit
+.streamlit/secrets.toml
+venv/

@@ -112,6 +112,18 @@ app.include_router(smart_grading.router)
 
 # ── Root endpoint (backward compatible) ──────────────────────────
 
+﻿from fastapi import FastAPI
+from app.routers import resume_parser, users
+
+app = FastAPI(
+    title="Murialo AI Engine",
+    description="AI Engine Murialo — modul kecerdasan buatan untuk rekrutmen",
+    version="1.0.0"
+)
+
+app.include_router(resume_parser.router)
+app.include_router(users.router)
+
 @app.get("/")
 def read_root():
     return {"message": "Murialo AI Engine is running"}
@@ -120,4 +132,6 @@ def read_root():
 @app.get("/health")
 def health_check_legacy():
     """Health check lama — dipertahankan untuk backward compatibility."""
+@app.get("/health")
+def health_check():
     return {"status": "ok"}
