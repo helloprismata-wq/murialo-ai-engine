@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "Murialo AI Engine API",
+    "_postman_id": "murialo-ai-engine-v1",
+    "description": "Postman Collection untuk menguji endpoint S-BERT Skill Matching dan Smart Grading Murialo AI Engine.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check (v1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health"]
+            }
+          }
+        },
+        {
+          "name": "Health Detailed (v1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health/detailed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health", "detailed"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skill Matching",
+      "item": [
+        {
+          "name": "Match CV with Job Description",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"candidate_id\": \"kandidat-01\",\n  \"job_id\": \"job-01\",\n  \"resume_text\": \"Software engineer dengan pengalaman 3 tahun mengembangkan backend menggunakan Laravel, PHP, REST API, MySQL, dan Docker. Terbiasa dengan arsitektur microservices.\",\n  \"job_description\": \"Dibutuhkan Backend Developer yang mahir dalam Laravel, database MySQL, pembuatan REST API, dan containerization dengan Docker.\",\n  \"required_skills\": [\"Laravel\", \"PHP\", \"MySQL\", \"Docker\", \"Redis\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/skill-matching",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "skill-matching"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smart Grading",
+      "item": [
+        {
+          "name": "Grade Single Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"candidate_id\": \"kandidat-01\",\n  \"question_id\": \"soal-01\",\n  \"candidate_answer\": \"Dependency injection adalah teknik desain di mana dependensi objek disediakan dari luar daripada dibuat di dalam kelas tersebut.\",\n  \"reference_answers\": [\n    \"Dependency injection merupakan teknik perancangan di mana objek disuplai dependensinya oleh pihak luar untuk meningkatkan modularitas dan kemudahan pengujian.\"\n  ],\n  \"max_score\": 10.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/smart-grading",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "smart-grading"]
+            }
+          }
+        },
+        {
+          "name": "Grade Batch Answers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"candidate_id\": \"kandidat-01\",\n      \"question_id\": \"soal-01\",\n      \"candidate_answer\": \"REST API menggunakan protokol HTTP dengan metode standar seperti GET, POST, PUT, DELETE.\",\n      \"reference_answers\": [\"REST API adalah arsitektur web service berbasis HTTP dengan status stateless.\"],\n      \"max_score\": 10.0\n    },\n    {\n      \"candidate_id\": \"kandidat-01\",\n      \"question_id\": \"soal-02\",\n      \"candidate_answer\": \"Database index mempercepat pembacaan data dengan struktur seperti B-Tree.\",\n      \"reference_answers\": [\"Indeks database meningkatkan performa query SELECT dengan mengorbankan sedikit kecepatan operasi penulisan.\"],\n      \"max_score\": 15.0\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/smart-grading/batch",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "smart-grading", "batch"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8001"
+    },
+    {
+      "key": "api_key",
+      "value": ""
+    }
+  ]
+}
