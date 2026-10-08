@@ -112,7 +112,7 @@ app.include_router(smart_grading.router)
 
 # ── Root endpoint (backward compatible) ──────────────────────────
 
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from app.routers import resume_parser, users
 
 app = FastAPI(
