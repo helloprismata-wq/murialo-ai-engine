@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 *.env
 .env
+.env.*
 .DS_Store
 .vscode/
 .idea/
@@ -32,3 +33,7 @@ __pycache__/
 # Streamlit
 .streamlit/secrets.toml
 venv/
+
+!.env.example
+
+*.bak

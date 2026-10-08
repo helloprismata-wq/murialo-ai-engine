@@ -1,0 +1,20 @@
+# API dan server
+fastapi
+uvicorn[standard]
+pydantic
+
+# Database MySQL
+SQLAlchemy
+PyMySQL
+
+# Konfigurasi .env
+python-dotenv
+
+# S-BERT untuk matching dan grading
+sentence-transformers
+
+# Upload file/form melalui FastAPI
+python-multipart
+
+pydantic-settings
+
